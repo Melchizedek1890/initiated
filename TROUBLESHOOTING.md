@@ -4,7 +4,7 @@ If you are having trouble with Copilot for Xcode follow these steps to resolve
 common issues:
 
 1. Check for updates and restart Xcode. Ensure that Copilot for Xcode has the
-   [latest release](https://github.com/github/CopilotForXcode/releases/latest)
+   [latest release](https://github.com/github/CopilotForXcoude/releases/latest)
    by click `Check for Updates` in the settings or under the status menu. After
    updating, restart Xcode.
 
