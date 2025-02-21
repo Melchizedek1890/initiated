@@ -7,7 +7,31 @@ public extension XcodeAppInstanceInspector {
     func triggerCopilotCommand(name: String, activateXcode: Bool = true) async throws {
         let bundleName = Bundle.main
             .object(forInfoDictionaryKey: "EXTENSION_BUNDLE_NAME") as! String
+        
+        guard await isBundleEnabled(bundleName: bundleName) else {
+            throw CantRunCommand(path: "Editor/\(bundleName)/\(name)", reason: "\(bundleName) is not enabled")
+        }
+        
         try await triggerMenuItem(path: ["Editor", bundleName, name], activateApp: activateXcode)
+    }
+    
+    private func isBundleEnabled(bundleName: String) async -> Bool {
+        let app = AXUIElementCreateApplication(runningApplication.processIdentifier)
+        
+        guard let menuBar = app.menuBar,
+              let editorMenu = menuBar.child(title: "Editor") else {
+            return false
+        }
+        
+        if let bundleMenuItem = editorMenu.child(title: bundleName, role: "AXMenuItem") {
+            var enabled: CFTypeRef?
+            let error = AXUIElementCopyAttributeValue(bundleMenuItem, kAXEnabledAttribute as CFString, &enabled)
+            if error == .success, let isEnabled = enabled as? Bool {
+                return isEnabled
+            }
+        }
+        
+        return false
     }
 }
 
